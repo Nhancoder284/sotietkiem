@@ -2,8 +2,7 @@
 # ĐỒ ÁN NHẬP MÔN CÔNG NGHỆ PHẦN MỀM - ĐỀ TÀI: QUẢN LÝ SỔ TIẾT KIỆM
 
 ### LỜI GIỚI THIỆU
-Bên dưới đây là những thông tin về đồ án của môn nhập môn công nghệ phần mềm với đề tài là: quản lý sổ tiết kiệm, đồ án được thực hiện bởi các thành viên của nhóm 8 dưới sự hướng dẫn của thầy Bùi Tấn Lộc.
-
+Mình tên Lê Bảo Nhân 
 ### THÔNG TIN CƠ BẢN
 Đồ án đã sử dụng các công cụ/ngôn ngữ sau trong suốt quá trình thực hiện:
 * Front-end: HTML, CSS và Javascript.
