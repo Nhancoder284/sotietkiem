@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Add your CSS styling here */
+    </style>
+</head>
+<body>
+<div class="main">
+    <div class="mainDashboard">
+        <div class="dashboardHeader">
+            <button type="button" class="sidebarButton">
+                <i class="icon iconSidebar"></i>
+            </button>
+            
+            <br>
+            
+            <div>
+                
+            </div>
+          
+            
+            
+        </div>
+        
+        <div class="summary"style="	font-family: 'Segoe UI', Tahoma, Geneva, Verdana;
+">
+            <div class="sum">
+                <i class="icon iconSum"></i>
+                <p>Tổng số tiền trong sổ</p>
+                <h1 class="summary-total">${{summary}}</h1>
+            </div>
+            <div class="send">
+                <i class="icon iconSend"></i>
+                <p>Đã gửi vào tháng này</p>
+                <h1 class="summary-deposit">${{depositAmount}}</h1>
+            </div>
+            <div class="withdraw">
+                <i class="icon iconWithdraw"></i>
+                <p>Đã rút tháng này</p>
+                <h1 class="summary-withdraw">${{withdrawAmount}}</h1>
+            </div>
+        </div>
+        
+       
+        {{#each deposits}}
+        <div class="noti">
+            <i class="icon iconSend"></i>
+            <h2>Nạp {{this.passbook_name}}</h2>
+            <h2 class="amount">+${{this.depslip_amount}}</h2>
+        </div>
+        {{/each}}
+
+        {{#each withdraws}}
+        <div class="noti">
+            <i class="icon iconWithdraw"></i>
+            <h2>Rút {{this.passbook_name}}</h2>
+            <h2 class="amount">-${{this.wdslip_amount}}</h2>
+        </div>
+        {{/each}}
+        
+
+         
+        
+         <canvas id="myChart" width="200" height="60"></canvas>
+
+    </div>
+    
+    <div class="profilebar">
+        <div class="avatarContainer">
+            <i class="avatarFrame">
+                <img class="avatar" src="img/image.png" alt="avt">
+            </i>
+            
+        </div>
+        <h2 class="username">{{username}}</h2>
+        <h3 class="usermail">{{email}}</h3>
+        <a href="/profile"><button type="button" class="editprofile">Chỉnh sửa</button></a>
+        {{#each passbooks}}
+        <div class="savingbook">
+            <form action="/passbook/details" method="post">
+                <input type="number" name="passbookID" value="{{this.passbook_id}}" hidden>
+            </form>
+            <i class="icon iconSum"></i>
+            <p>{{this.passbook_name}}</p>
+            <h1>${{this.passbook_deposits}}</h1>
+        </div>
+        {{/each}}
+        {{#if createable}}
+        <div>
+            <a href="/passbook/create" class="addBtn"><i class="icon iconAdd"></i></a>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+<script>
+    // Function to extract numbers from formatted text
+    function extractNumber(text) {
+        return parseFloat(text.replace(/[^\d.-]/g, ''));
+    }
+
+    // Extract data from the summary elements
+    const summaryTotalText = document.querySelector('.summary-total').textContent;
+    const depositAmountText = document.querySelector('.summary-deposit').textContent;
+    const withdrawAmountText = document.querySelector('.summary-withdraw').textContent;
+
+    const summaryTotal = extractNumber(summaryTotalText);
+    const depositAmount = extractNumber(depositAmountText);
+    const withdrawAmount = extractNumber(withdrawAmountText);
+
+    // Log the extracted values to the console
+    console.log('Summary Total:', summaryTotal);
+    console.log('Deposit Amount:', depositAmount);
+    console.log('Withdraw Amount:', withdrawAmount);
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11'],
+            datasets: [{
+                label: 'Tổng tiền',
+                data: [0, summaryTotal, 0, 0, 0, 0],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }, {
+                label: 'Tiền gửi',
+                data: [0, depositAmount, 0, 0, 0, 0],
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1
+            }, {
+                label: 'Tiền rút',
+                data: [0, withdrawAmount, 0, 0, 0, 0],
+                borderColor: 'rgb(255, 205, 86)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+      function setDarkMode(isDark) {
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+
+    // Check localStorage for dark mode preference on page load
+    const darkModePreference = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(darkModePreference);
+
+    // Handle dark mode toggle
+    const toggleButton = document.getElementById('darkModeToggle');
+    toggleButton.checked = darkModePreference;
+    toggleButton.addEventListener('change', () => {
+        const isDarkMode = toggleButton.checked;
+        setDarkMode(isDarkMode);
+        localStorage.setItem('darkMode', isDarkMode);
+    });
+
+
+</script>
+</body>
+</html>
+<style>
+    body {
+            background-color: #ffffff;
+            color: #000000;
+        }
+    /* Dark mode styles */
+    body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+    }
+    body.dark-mode .editprofile{
+        color: #ffffff;
+    }
+    body.dark-mode .savingbook {
+    background: linear-gradient(65.44deg, #4e4e4e 0%, #3e3e3e 94.64%);
+    color: #ffffff; /* Ensure text is readable */}
+body.dark-mode .mainHeader p,
+body.dark-mode label {
+    color: #ffffff;
+}
+    body.dark-mode .mainDashboard {
+        background-color: #1e1e1e;
+    }
+
+    body.dark-mode .main {
+        background-color: #1e1e1e;
+    }
+
+    body.dark-mode .summary .sum {
+        background: linear-gradient(65.44deg, #4e4e4e 0%, #3e3e3e 94.64%);
+    }
+    body.dark-mode .mainHeader.p {
+        color: #ffffff;
+    }
+
+    body.dark-mode .summary .send,
+    body.dark-mode .summary .withdraw,
+    body.dark-mode .mainDashboard .noti {
+        background-color: #333333;
+    }
+
+    body.dark-mode .summary .send p,
+    body.dark-mode .summary .withdraw p {
+        color: #bbbbbb;
+    }
+
+    body.dark-mode .summary .send h1,
+    body.dark-mode .summary .withdraw h1 {
+        color: #ffffff;
+    }
+body.dark-mode .username {
+    color: #ffffff;
+}
+    /* Other styles for elements in dark mode */
+    body.dark-mode .dashboardHeader,
+    body.dark-mode .profilebar,
+    body.dark-mode .savingbook,
+    body.dark-mode .noti .amount {
+        color: #ffffff;
+    }
+
+    :root {
+        --theme-toggle-width: 5rem;
+        --theme-toggle-height: 2.5rem;
+        --theme-toggle-circle-width: 0;
+        --theme-toggle-circle-dimensions: calc(var(--theme-toggle-height) - 0.5rem);
+    }
+
+    body {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        min-height: 10rem;
+        background-color: #fff;
+        transition: background-color 0.5s;
+    }
+
+    .dark-body {
+        background-color: #111;
+    }
+
+    .theme-toggle {
+        margin-top: 20px;
+        margin-left: 20px;
+        -webkit-appearance: none;
+        outline: none;
+        cursor: pointer;
+        height: var(--theme-toggle-height);
+        width: var(--theme-toggle-width);
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        position: relative;
+        border-radius: var(--theme-toggle-circle-dimensions);
+        padding: 0.2rem;
+        background-color: #ffffff;
+        transition: background-color 0.5s;
+    }
+
+    .theme-toggle:before {
+        content: "";
+        width: var(--theme-toggle-circle-dimensions);
+        height: var(--theme-toggle-circle-dimensions);
+        background-color: #000000;
+        position: absolute;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%) translateX(0%);
+        transition: transform 0.5s;
+    }
+
+    .theme-toggle:after {
+        content: "Light mode";
+        white-space: nowrap;
+        color: #ffffff;
+        position: absolute;
+        left: calc(100% + 1.5rem);
+        font-size: 1.3rem;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .theme-toggle:checked {
+        background-color: #000000;
+        border: none;
+    }
+
+    .theme-toggle:checked:before {
+        background-color: #fefefe;
+        transform: translateY(-50%) translateX(calc(var(--theme-toggle-width) - var(--theme-toggle-height)));
+    }
+
+    .theme-toggle:checked:after {
+        content: "Dark mode";
+        color: #000000;
+    }
+</style>

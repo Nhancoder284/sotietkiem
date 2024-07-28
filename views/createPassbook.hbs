@@ -1,0 +1,338 @@
+<div class="main">
+    <div class="mainHeader">
+        <button type="button" class="sidebarButton">
+            <i class="icon iconSidebar"></i>
+        </button>
+        <p style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Mở sổ tiết kiệm mới</p>
+    </div>
+    <div>
+        <form action="/passbook/create" id="form" method="POST"style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana;
+">
+            <div class="fullnameBox box">
+                <label for="fullname">Tên khách hàng:</label>
+                <input type="text" id="fullname" name="fullname" value="{{fullname}}" readonly>
+            </div>
+            <div class="addressBox box">
+                <label for="address">Địa chỉ:</label>
+                {{#if address}}
+                <input type="text" id="address" name="address" value="{{address}}" readonly>
+                {{else}}
+                <input type="text" id="address" name="address" maxlength="80">
+                {{/if}}
+            </div>
+            <div class="citizenIDBox box">
+                <label for="citizenID">Số CMND/CCCD:</label>
+                {{#if citizenID}}
+                <input type="text" id="citizenID" name="citizenID" value="{{citizenID}}" readonly>
+                {{else}}
+                <input type="text" id="citizenID" name="citizenID" maxlength="12">
+                {{/if}}
+            </div>
+            <div class="booknameBox box">
+                <label for="bookname">Đặt tên cho sổ:</label>
+                <input type="text" id="bookname" name="bookname" maxlength="30">
+            </div>
+            <div class="depositBox box">
+                <label for="deposit">Số tiền gửi:</label>
+                <input type="number" id="deposit" name="deposit" placeholder="Tối thiểu 100000" step="1" min="100000">
+            </div>
+            <div class="typeBox box">
+
+                <input type="radio" id="NO" name="type" value="NO">
+                <label for="NO">Không kỳ hạn</label>
+
+                
+                <input type="radio" id="6M" name="type" value="6M">
+                <label for="6M">6 Tháng</label>
+
+                
+
+            </div>
+            
+
+            
+            
+
+            <!-- Interest rate display -->
+            <div class="interestRateBox box centered" id="interestRateBox" style="display:none;">
+                <label for="interestRate">Lãi suất (%/năm):</label>
+                <input type="text" id="interestRate" readonly>
+            </div>
+            <div class="amountReceivedBox box">
+    <label for="amountReceived">Tiền lãi dự kiến:</label>
+    <input type="number" id="amountReceived" name="amountReceived" readonly>
+
+</div>
+            <div class="dateBox box">
+                <label for="date">Ngày mở sổ:</label>
+                <input type="date" id="date" name="date" value="{{date}}" readonly>
+            </div>
+            <div class="maturityDateBox box centered" id="maturityDateBox" style="display:none;">
+    <label for="maturityDate">Ngày đáo hạn:</label>
+    <input type="text" id="maturityDate" readonly>
+     <div style="margin-top: 5px;" id="renewalBox" style="display:none;">
+                    <input type="checkbox" id="enableMaturityDate" name="enableMaturityDate" style="width: auto; display: inline-block; vertical-align: middle;">
+                    <label for="enableMaturityDate" style="display: inline-block; vertical-align: middle;">Tự động gia hạn</label>
+                </div>
+   
+    
+      
+</div>
+    
+
+            <div id="btn_side">
+                <input id="confirmBtn" type="submit" value="Mở sổ">
+                <a href="/dashboard"><button id="gobackBtn" type="button">Quay lại</button></a>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var noRadio = document.getElementById('NO');
+        var sixMonthRadio = document.getElementById('6M');
+        var interestRateBox = document.getElementById('interestRateBox');
+        var interestRateInput = document.getElementById('interestRate');
+        var maturityDateBox = document.getElementById('maturityDateBox');
+        var maturityDateInput = document.getElementById('maturityDate');
+        var depositInput = document.getElementById('deposit');
+        var amountReceivedInput = document.getElementById('amountReceived');
+        var enableMaturityDateCheckbox = document.getElementById('enableMaturityDate');
+        var renewalBox = document.getElementById('renewalBox');
+
+        function calculateInterest() {
+            var deposit = parseFloat(depositInput.value) || 0;
+            var interestRate = parseFloat(interestRateInput.value) || 0;
+            var interest = deposit * (interestRate / 100);
+            amountReceivedInput.value = interest.toFixed(0);
+        }
+
+        function calculateMaturityDate() {
+            var currentDate = new Date(document.getElementById('date').value);
+            var maturityDate = new Date(currentDate);
+            
+            if (sixMonthRadio.checked) {
+                maturityDate.setMonth(maturityDate.getMonth() + 6);
+            } else {
+                // Handle other types if needed
+            }
+
+            maturityDateInput.value = maturityDate.toLocaleDateString();
+        }
+
+         noRadio.addEventListener('change', function() {
+            if (noRadio.checked) {
+                interestRateBox.style.display = 'block';
+                interestRateInput.value = '0.1%';
+                maturityDateBox.style.display = 'block';
+                maturityDateInput.value = 'Không kỳ hạn';
+                renewalBox.style.display = 'none'; // Hide the checkbox for no term
+                calculateInterest();
+            }
+        });
+
+        sixMonthRadio.addEventListener('change', function() {
+            if (sixMonthRadio.checked) {
+                interestRateBox.style.display = 'block';
+                interestRateInput.value = '3.9%';
+                maturityDateBox.style.display = 'block';
+                var currentDate = new Date();
+                var maturityDate = new Date(currentDate);
+                maturityDate.setMonth(maturityDate.getMonth() + 6);
+                maturityDateInput.value = maturityDate.toLocaleDateString();
+                renewalBox.style.display = 'block'; // Show the checkbox for 6 months term
+                calculateMaturityDate();
+                calculateInterest();
+            }
+        });
+
+        depositInput.addEventListener('input', function() {
+            if (noRadio.checked || sixMonthRadio.checked) {
+                calculateInterest();
+                if (enableMaturityDateCheckbox.checked && sixMonthRadio.checked) {
+                    calculateMaturityDate();
+                }
+            }
+        });
+    });
+
+    function setDarkMode(isDark) {
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+
+    // Check localStorage for dark mode preference on page load
+    const darkModePreference = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(darkModePreference);
+
+    // Handle dark mode toggle
+    const toggleButton = document.getElementById('darkModeToggle');
+    toggleButton.checked = darkModePreference;
+    toggleButton.addEventListener('change', () => {
+        const isDarkMode = toggleButton.checked;
+        setDarkMode(isDarkMode);
+        localStorage.setItem('darkMode', isDarkMode);
+    });
+</script>
+
+<style>
+    .centered {
+        margin-top: -20px;;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .interestRateBox label{
+    
+    }
+    .interestRateBox input {
+        padding: 100px;
+width: 665px;        margin-left: 302px;
+    }
+    .maturityDateBox label {
+    /* Your label styles */
+}
+
+.maturityDateBox input {
+width: 665px;        margin-left: 302px;
+
+}
+
+    /* Dark mode styles */
+    body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+    }
+    body.dark-mode .editprofile{
+        color: #ffffff;
+    }
+    body.dark-mode .savingbook {
+    background: linear-gradient(65.44deg, #4e4e4e 0%, #3e3e3e 94.64%);
+    color: #ffffff; /* Ensure text is readable */}
+body.dark-mode .mainHeader p,
+body.dark-mode label {
+    color: #ffffff;
+}
+    body.dark-mode .mainDashboard {
+        background-color: #1e1e1e;
+    }
+
+    body.dark-mode .main {
+        background-color: #1e1e1e;
+    }
+
+    body.dark-mode .summary .sum {
+        background: linear-gradient(65.44deg, #4e4e4e 0%, #3e3e3e 94.64%);
+    }
+    body.dark-mode .mainHeader.p {
+        color: #ffffff;
+    }
+
+    body.dark-mode .summary .send,
+    body.dark-mode .summary .withdraw,
+    body.dark-mode .mainDashboard .noti {
+        background-color: #333333;
+    }
+
+    body.dark-mode .summary .send p,
+    body.dark-mode .summary .withdraw p {
+        color: #bbbbbb;
+    }
+
+    body.dark-mode .summary .send h1,
+    body.dark-mode .summary .withdraw h1 {
+        color: #ffffff;
+    }
+body.dark-mode .username {
+    color: #ffffff;
+}
+    /* Other styles for elements in dark mode */
+    body.dark-mode .dashboardHeader,
+    body.dark-mode .profilebar,
+    body.dark-mode .savingbook,
+    body.dark-mode .noti .amount {
+        color: #ffffff;
+    }
+
+    :root {
+        --theme-toggle-width: 5rem;
+        --theme-toggle-height: 2.5rem;
+        --theme-toggle-circle-width: 0;
+        --theme-toggle-circle-dimensions: calc(var(--theme-toggle-height) - 0.5rem);
+    }
+
+    body {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        min-height: 10rem;
+        background-color: #fff;
+        transition: background-color 0.5s;
+    }
+
+    .dark-body {
+        background-color: #111;
+    }
+
+    .theme-toggle {
+                margin-top: 20px;
+
+        margin-left: 20px;
+        -webkit-appearance: none;
+        outline: none;
+        cursor: pointer;
+        height: var(--theme-toggle-height);
+        width: var(--theme-toggle-width);
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        position: relative;
+        border-radius: var(--theme-toggle-circle-dimensions);
+        padding: 0.2rem;
+        background-color: #ffffff;
+        transition: background-color 0.5s;
+    }
+
+    .theme-toggle:before {
+        content: "";
+        width: var(--theme-toggle-circle-dimensions);
+        height: var(--theme-toggle-circle-dimensions);
+        background-color: #000000;
+        position: absolute;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%) translateX(0%);
+        transition: transform 0.5s;
+    }
+
+    .theme-toggle:after {
+        content: "Light mode";
+        white-space: nowrap;
+        color: #ffffff;
+        position: absolute;
+        left: calc(100% + 1.5rem);
+        font-size: 1.3rem;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .theme-toggle:checked {
+        background-color: #000000;
+        border: none;
+    }
+
+    .theme-toggle:checked:before {
+        background-color: #fefefe;
+        transform: translateY(-50%) translateX(calc(var(--theme-toggle-width) - var(--theme-toggle-height)));
+    }
+
+    .theme-toggle:checked:after {
+        content: "Dark mode";
+        color: #000000;
+    }
+
+
+
+</style>

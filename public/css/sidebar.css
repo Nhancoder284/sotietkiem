@@ -1,0 +1,120 @@
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 220px;
+    min-height: 100%;
+    overflow-y:auto;
+        background-color: #2c2d39;
+        border-radius: 5px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 18px;
+    gap: 1em;
+    
+}
+
+.sidebarHeader{
+    min-width: 80%;
+    font-weight: bold;
+    margin: 2rem;
+}
+
+.sidebar nav{
+    height: 100%;
+}
+.logoutButton{
+    min-width: 80%;
+    margin: 2rem 0;
+    padding: 0 2rem
+}
+
+.logoutButton a{
+    color: #D36363;
+}
+
+.logoutButton:hover{
+    background-color: #E5E5E5;
+    /* color: #5B25B4; */
+}
+.sidebar .icon{
+    width: 2.2rem;
+    height: 2.2em;
+    background-position: 50%;
+
+}
+
+ul {
+    list-style-type: none;
+    margin: 20;
+    padding: 0;
+}
+
+ul li{
+    display: flex;
+    overflow:hidden;
+}
+
+ul li a{
+    width: 100%;
+    padding-left: 10%;
+    letter-spacing: 1px;
+}
+ul li a:hover{
+    background-color: #E5E5E5;
+    color: #ffffff;
+}
+
+ul li a.active{
+    background-color: white;
+    color: black;
+    border: 2px solid #E5E5E5; /* Add this line to create a border */
+    border-radius: 5px; /* Optional: to give the border rounded corners */
+}
+ul li a:hover i.iconCustomer{
+    background-image: url(../icon/customer.svg);}
+
+ul li a:hover i.iconDashboard{
+    background-image: url(../icon/dashboardActive.svg);
+}
+
+ul li a:hover i.iconSettings{
+    background-image: url(../icon/settingsActive.svg);
+}
+
+ul li a:hover i.iconProfile{
+    background-image: url(../icon/profileActive.svg);
+}
+
+ul li a:hover i.iconSaved{
+    background-image: url(../icon/savedActive.svg);
+}
+
+ul li a:hover i.iconSavings{
+    background-image: url(../icon/savingsActive.svg);
+}
+
+ul li a.active i.iconDashboard{
+    background-image: url(../icon/dashboardActive.svg);
+}
+
+ul li a.active i.iconSettings{
+    background-image: url(../icon/settingsActive.svg);
+}
+
+ul li a.active i.iconProfile{
+    background-image: url(../icon/profileActive.svg);
+}
+
+ul li a.active i.iconSaved{
+    background-image: url(../icon/savedActive.svg);
+}
+
+ul li a.active i.iconSavings{
+    background-image: url(../icon/savingsActive.svg);
+}

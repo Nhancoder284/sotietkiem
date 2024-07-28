@@ -1,0 +1,267 @@
+<div class="main">
+    <div class="mainHeader">
+        <button type="button" class="sidebarButton">
+            <i class="icon iconSidebar"></i>
+        </button>
+        <p style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Sổ tiết kiệm</p>
+    </div>
+    <div>
+        <form action="#" id="form" method="POST"style="	font-family: 'Segoe UI', Tahoma, Geneva, Verdana;
+">
+            <input type="number" name="passbookID" value="{{passbookID}}" hidden>
+            <div class = "booknameBox box">
+                <label for="bookname">Tên sổ:</label>
+                <input type="text" id="bookname" name="bookname" value="{{bookname}}"  maxlength="30" readonly>
+            </div>
+            <div class = "typeBox box">
+                <label for="type">Loại sổ:</label>
+                <input type="text" id="type" name="type" value="{{type}}" readonly>
+                <input type="text" id="type" name="type" value="{{typename}}" hidden>
+
+            </div>
+          
+           
+            <div class = "depositBox box">
+                <label for="deposit">Số dư trong sổ:</label>
+                <input type="number" id="deposit" name="deposit" step="1" min="100000" value="{{deposit}}"readonly>
+            </div>
+  <div class="laisuatBox box">
+    <label for="interest">Lãi suất (%/năm):</label>
+    <input type="text" id="interest" name="interest" readonly>
+</div>
+
+<div class="amountReceivedBox box">
+    <label for="amountReceived">Tiền lãi dự kiến:</label>
+    <input type="number" id="amountReceived" name="amountReceived" readonly>
+
+</div>
+            <div class = "dateBox box">
+                <label for="date">Ngày mở sổ:</label>
+                <input type="date" id="date" name="date" value ="{{date}}" readonly>
+            </div>
+
+            {{#if expdate}}
+
+            <div class = "expdateBox box">
+                <label for="expdate">Ngày đáo hạn:</label>
+                <input type="date" id="expdate" name="expdate" value ="{{expdate}}" readonly>
+            </div>
+             
+
+            {{else}}
+            
+    <div class="expdateBox box">
+        <label for="expdate">Ngày đáo hạn:</label>
+        <input type="text" id="expdate" name="expdate" value="Không kỳ hạn" readonly>
+
+
+
+    </div>
+     
+   
+
+            {{/if}}
+            <div id="btn_side">
+                {{#if depositable}}
+                <input id="confirmBtn" type="submit" value="Gửi tiền" formaction="/passbook/details/deposit"></input>
+                {{/if}}
+                 {{#if sendAgain}}
+                <input id="confirmBtn" type="submit" value="Tái tục" formaction="/passbook/details/sendAgain"></input>
+                {{/if}}
+                {{#if withdrawable}}
+                <input id="confirmBtn" type="submit" value="Tất toán" formaction="/passbook/details/withdraw"></input>
+                {{/if}}
+                <a href="/dashboard"><button id="gobackBtn" type="button">Quay lại</button></button></a>
+
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function handleChange() {
+        var type = document.getElementById("type").value;
+        var deposit = parseFloat(document.getElementById("deposit").value); // Get deposit amount as a number
+        var interestInput = document.getElementById("interest");
+        var amountReceivedInput = document.getElementById("amountReceived");
+
+        var dailyInterestRate = 0; // Initialize daily interest rate
+
+        if (type === "Không kỳ hạn") {
+            // Nếu chọn không kỳ hạn
+            interestInput.value = "0.1%";
+            dailyInterestRate = 0.001; // 0.1% per day
+        } else if (type === "Kỳ hạn 6 tháng") {
+            // Nếu chọn kỳ hạn 6 tháng
+            interestInput.value = "3.9%";
+            dailyInterestRate = 0.039 ; // 3.9% per year, daily interest rate
+        }
+
+        var interestAmount = deposit * dailyInterestRate; // Calculate daily interest amount
+        var amountReceived = deposit + interestAmount; // Calculate total amount received
+
+        amountReceivedInput.value = interestAmount.toFixed(0); // Display daily interest amount (rounded to nearest integer)
+    }
+
+    function updateDepositDaily() {
+        var depositInput = document.getElementById("deposit");
+        var deposit = parseFloat(depositInput.value);
+        deposit += 222222; // Add 222,222 VND to the deposit
+        depositInput.value = deposit.toFixed(0);
+        handleChange(); // Update interest and amount received
+    }
+
+    // Call handleChange function initially to set initial interest and amount received values
+    handleChange();
+
+    // Set interval to update deposit amount daily (86400000 milliseconds = 1 day)
+    setInterval(updateDepositDaily, 86400000);
+function setDarkMode(isDark) {
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+
+    // Check localStorage for dark mode preference on page load
+    const darkModePreference = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(darkModePreference);
+
+    // Handle dark mode toggle
+    const toggleButton = document.getElementById('darkModeToggle');
+    toggleButton.checked = darkModePreference;
+    toggleButton.addEventListener('change', () => {
+        const isDarkMode = toggleButton.checked;
+        setDarkMode(isDarkMode);
+        localStorage.setItem('darkMode', isDarkMode);
+    });
+    
+</script>
+<style>
+    /* Dark mode styles */
+    body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+    }
+     
+body.dark-mode .mainHeader p,
+body.dark-mode label {
+    color: #ffffff;
+}	
+    body.dark-mode .mainDashboard {
+        background-color: #1e1e1e;
+    }
+
+    body.dark-mode .main {
+        background-color: #1e1e1e;
+    }
+
+    body.dark-mode .summary .sum {
+        background: linear-gradient(65.44deg, #4e4e4e 0%, #3e3e3e 94.64%);
+    }
+body.dark-mode .mainHeader.p {
+        color: #ffffff;
+    }
+    body.dark-mode .summary .send,
+    body.dark-mode .summary .withdraw,
+    body.dark-mode .mainDashboard .noti {
+        background-color: #333333;
+    }
+
+    body.dark-mode .summary .send p,
+    body.dark-mode .summary .withdraw p {
+        color: #bbbbbb;
+    }
+
+    body.dark-mode .summary .send h1,
+    body.dark-mode .summary .withdraw h1 {
+        color: #ffffff;
+    }
+body.dark-mode .username {
+    color: #ffffff;
+}
+    /* Other styles for elements in dark mode */
+    body.dark-mode .dashboardHeader,
+    body.dark-mode .profilebar,
+
+    body.dark-mode .savingbook,
+    body.dark-mode .noti .amount {
+        color: #ffffff;
+    }
+
+    :root {
+        --theme-toggle-width: 5rem;
+        --theme-toggle-height: 2.5rem;
+        --theme-toggle-circle-width: 0;
+        --theme-toggle-circle-dimensions: calc(var(--theme-toggle-height) - 0.5rem);
+    }
+
+    body {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        min-height: 10rem;
+        background-color: #fff;
+        transition: background-color 0.5s;
+    }
+
+    .dark-body {
+        background-color: #111;
+    }
+
+    .theme-toggle {
+    margin-top: 20px;
+
+        margin-left: 20px;
+        -webkit-appearance: none;
+        outline: none;
+        cursor: pointer;
+        height: var(--theme-toggle-height);
+        width: var(--theme-toggle-width);
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        position: relative;
+        border-radius: var(--theme-toggle-circle-dimensions);
+        padding: 0.2rem;
+        background-color: #ffffff;
+        transition: background-color 0.5s;
+    }
+
+    .theme-toggle:before {
+        content: "";
+        width: var(--theme-toggle-circle-dimensions);
+        height: var(--theme-toggle-circle-dimensions);
+        background-color: #000000;
+        position: absolute;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%) translateX(0%);
+        transition: transform 0.5s;
+    }
+
+    .theme-toggle:after {
+        content: "Light mode";
+        white-space: nowrap;
+        color: #ffffff;
+        position: absolute;
+        left: calc(100% + 1.5rem);
+        font-size: 1.3rem;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .theme-toggle:checked {
+        background-color: #000000;
+        border: none;
+    }
+
+    .theme-toggle:checked:before {
+        background-color: #fefefe;
+        transform: translateY(-50%) translateX(calc(var(--theme-toggle-width) - var(--theme-toggle-height)));
+    }
+
+    .theme-toggle:checked:after {
+        content: "Dark mode";
+        color: #000000;
+    }
+</style>
